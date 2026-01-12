@@ -56,7 +56,7 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
      return api.sendMessage("~ তোমার বাল উঠে নাই নাকি তোমার?? 🤖", threadID);
    };
 
-  if ((event.body.toLowerCase() == "@Md Mamun Islam") || (event.body.toLowerCase() == "মামুন ") || (event.body.toLowerCase() == "@Mamun ッ") || (event.body.toLowerCase() == "মামুন")) {
+  if ((event.body.toLowerCase() == "@md mamun islam") || (event.body.toLowerCase() == "মামুন ") || (event.body.toLowerCase() == "@Mamun ッ") || (event.body.toLowerCase() == "মামুন")) {
      return api.sendMessage("আমার উনি এখন কাজে বিজি আছে কি বলবেন আমাকে বলতে পারেন..!😘",threadID);
 
        
@@ -119,12 +119,12 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
      return api.sendMessage("️এতো ধন্যবাদ না দিয়ে পারলে আমার বস মামুন কে গার্লফ্রেন্ড টা দিয়ে দে..!🌚⛏️🌶️", threadID);
    };
 
-   if ((event.body.toLowerCase() == "😡😡😡") || (event.body.toLowerCase() == "...") || (event.body.toLowerCase() == "😠") || (event.body.toLowerCase() == "🤬") || (event.body.toLowerCase() == "😾")) {
+   if ((event.body.toLowerCase() == "😡😡😡") || (event.body.toLowerCase() == "😤") || (event.body.toLowerCase() == "😠") || (event.body.toLowerCase() == "🤬") || (event.body.toLowerCase() == "😾")) {
      return api.sendMessage("️রাগ করে না সোনা পাখি এতো রাগ শরীরের জন্য ভালো না🥰", threadID);
    };
 
-   if ((event.body.toLowerCase() == "hi") || (event.body.toLowerCase() == "Hum")) {
-     return api.sendMessage("️হাই চোদাইস না মাথা এমনিতেই গরম আছে সালাম দে🤬⛏️😷", threadID);
+   if ((event.body.toLowerCase() == "hi") || (event.body.toLowerCase() == "হুম ")) {
+     return api.sendMessage("️হাই,হুম চোদাইস না মাথা এমনিতেই গরম আছে সালাম দে🤬⛏️😷", threadID);
    };
 
    if ((event.body.toLowerCase() == "Name") || (event.body.toLowerCase() == "name") || (event.body.toLowerCase() == "Tor nam ki")) {
@@ -140,7 +140,7 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
    };
 
    if ((event.body.toLowerCase() == "ex gf") || (event.body.toLowerCase() == "ex")) {
-     return api.sendMessage("️Kiss Randi Ka Name Le Ke Mood Khrab Kr Diya.🙄 Dubara Naam Mat Lena Iska", threadID);
+     return api.sendMessage("️aj kau nai bole", threadID);
    };
 
    if ((event.body.toLowerCase() == "cudi") || (event.body.toLowerCase() == "tor nanire xudi")) {
