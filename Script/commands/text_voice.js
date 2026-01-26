@@ -6,7 +6,7 @@ module.exports = {
   config: {
     name: "text_voice",
     version: "1.0.0",
-    author: "MOHAMMAD Mamun",
+    author: "MOHAMMAD AKASH",
     countDown: 5,
     role: 0,
     shortDescription: "নির্দিষ্ট টেক্সটে ভয়েস রিপ্লাই 😍",
