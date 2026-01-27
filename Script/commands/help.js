@@ -1,12 +1,12 @@
 const fs = require("fs-extra");
-const axios = require("axios");
+const request = require("request");
 const path = require("path");
 
 module.exports.config = {
     name: "help",
     version: "2.0.0",
     hasPermssion: 0,
-    credits: "MAMUN ISLAM",
+    credits: "SHAHADAT SAHU",
     description: "Shows all commands with details",
     commandCategory: "system",
     usages: "[command name/page number]",
@@ -19,22 +19,21 @@ module.exports.config = {
 
 module.exports.languages = {
     "en": {
-        "moduleInfo": `╭━━━━━━━━━━━━━━━━╮
-┃ ✨ 𝐂𝐎𝐌𝐌𝐀𝐍𝐃 𝐈𝐍𝐅𝐎 ✨
-┣━━━━━━━━━━━┫
-┃ 🔖 Name: %1
-┃ 📄 Usage: %2
-┃ 📜 Description: %3
-┃ 🔑 Permission: %4
-┃ 👨‍💻 Credit: %5
-┃ 📂 Category: %6
-┃ ⏳ Cooldown: %7s
-┣━━━━━━━━━━━━━━━━┫
-┃ ⚙ Prefix: %8
-┃ 🤖 Bot Name: %9
-┃ 👑 Owner: M A M U N
-╰━━━━━━━━━━━━━━━━╯`,
-        "helpList": "[ There are %1 commands. Use: "%2help commandName" to view more. ]",
+        "moduleInfo": `
+✨ 𝐂𝐎𝐌𝐌𝐀𝐍𝐃 𝐈𝐍𝐅𝐎 ✨
+🔖 Name: %1
+📄 Usage: %2
+📜 Description: %3
+🔑 Permission: %4
+👨‍💻 Credit: %5
+📂 Category: %6
+⏳ Cooldown: %7s
+
+⚙ Prefix: %8
+🤖 Bot Name: %9
+👑 Owner: MAMUN
+`,
+        "helpList": "[ There are %1 commands. Use: \"%2help commandName\" to view more. ]",
         "user": "User",
         "adminGroup": "Admin Group",
         "adminBot": "Admin Bot"
@@ -43,54 +42,28 @@ module.exports.languages = {
 
 // 🔹 এখানে আপনার ফটো Imgur লিংক করে বসাবেন ✅
 const helpImages = [
-  "https://imgur.com/a/qBn67BS.jpg",
-  "https://i.imgur.com/ABC123x.jpg",
-  "",
+    "https://imgur.com/a/Zz5G3oI.jpeg",
+    ".jpeg",
+    "https://i.imgur.com/8WvpgUL.jpeg",
+    "https://i.imgur.com/sxSn1K3.jpeg"
 ];
 
-async function downloadImages(callback) {
-    try {
-        const cacheDir = path.join(__dirname, "cache");
-        await fs.ensureDir(cacheDir); // Ensure cache directory exists [web:12][web:15]
 
-        const validImages = helpImages.filter(url => url && url.trim() !== "");
-        if (validImages.length === 0) {
-            return callback([]);
-        }
+function downloadImages(callback) {
+    const randomUrl = helpImages[Math.floor(Math.random() * helpImages.length)];
+    const filePath = path.join(__dirname, "cache", "help_random.jpg");
 
-        const randomUrl = validImages[Math.floor(Math.random() * validImages.length)];
-        const filePath = path.join(cacheDir, "help_random.jpg");
-
-        const response = await axios({
-            method: 'GET',
-            url: randomUrl,
-            responseType: 'stream',
-            timeout: 10000 // 10 second timeout
-        }); [web:11][web:14][web:17]
-
-        const writer = fs.createWriteStream(filePath);
-        response.data.pipe(writer);
-
-        writer.on('finish', () => {
-            callback([filePath]);
-        });
-
-        writer.on('error', (err) => {
-            console.error('Download error:', err);
-            callback([]); // Fallback to no image
-        });
-    } catch (error) {
-        console.error('Download failed:', error.message);
-        callback([]); // No image on error
-    }
+    request(randomUrl)
+        .pipe(fs.createWriteStream(filePath))
+        .on("close", () => callback([filePath]));
 }
 
-module.exports.handleEvent = async function ({ api, event, getText }) {
+module.exports.handleEvent = function ({ api, event, getText }) {
     const { commands } = global.client;
     const { threadID, messageID, body } = event;
 
     if (!body || typeof body === "undefined" || body.indexOf("help") != 0) return;  
-    const splitBody = body.slice(body.indexOf("help")).trim().split(/s+/);  
+    const splitBody = body.slice(body.indexOf("help")).trim().split(/\s+/);  
     if (splitBody.length < 2 || !commands.has(splitBody[1].toLowerCase())) return;  
 
     const threadSetting = global.data.threadData.get(parseInt(threadID)) || {};  
@@ -106,17 +79,18 @@ module.exports.handleEvent = async function ({ api, event, getText }) {
         command.config.commandCategory || "Unknown",  
         command.config.cooldowns || 0,  
         prefix,  
-        global.config.BOTNAME || "𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭"  
+        global.config.BOTNAME || "Mamun 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭"  
     );  
 
-    const files = await downloadImages();
-    const attachments = files.map(f => fs.createReadStream(f));  
-    api.sendMessage({ body: detail, attachment: attachments }, threadID, () => {  
-        files.forEach(f => fs.unlinkSync(f));  
-    }, messageID);
+    downloadImages(files => {  
+        const attachments = files.map(f => fs.createReadStream(f));  
+        api.sendMessage({ body: detail, attachment: attachments }, threadID, () => {  
+            files.forEach(f => fs.unlinkSync(f));  
+        }, messageID);  
+    });
 };
 
-module.exports.run = async function ({ api, event, args, getText }) {
+module.exports.run = function ({ api, event, args, getText }) {
     const { commands } = global.client;
     const { threadID, messageID } = event;
 
@@ -135,14 +109,15 @@ module.exports.run = async function ({ api, event, args, getText }) {
             command.config.commandCategory || "Unknown",  
             command.config.cooldowns || 0,  
             prefix,  
-            global.config.BOTNAME || "𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭"  
+            global.config.BOTNAME || "Mamun 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭"  
         );  
 
-        const files = await downloadImages();
-        const attachments = files.map(f => fs.createReadStream(f));  
-        api.sendMessage({ body: detailText, attachment: attachments }, threadID, () => {  
-            files.forEach(f => fs.unlinkSync(f));  
-        }, messageID);
+        downloadImages(files => {  
+            const attachments = files.map(f => fs.createReadStream(f));  
+            api.sendMessage({ body: detailText, attachment: attachments }, threadID, () => {  
+                files.forEach(f => fs.unlinkSync(f));  
+            }, messageID);  
+        });  
         return;  
     }  
 
@@ -156,25 +131,25 @@ module.exports.run = async function ({ api, event, args, getText }) {
     const start = numberOfOnePage * (page - 1);  
     const helpView = arrayInfo.slice(start, start + numberOfOnePage);  
 
-    let msg = helpView.map(cmdName => `┃ ✪ ${cmdName}`).join("
-");
+    let msg = helpView.map(cmdName => `┃ ✪ ${cmdName}`).join("\n");
 
-    const text = `╭━━━━━━━━━━━━━━━━╮
-┃ 📜 𝐂𝐎𝐌𝐌𝐀𝐍𝐃 𝐋𝐈𝐒𝐓 📜
-┣━━━━━━━━━━━━━━━┫
-┃ 📄 Page: ${page}/${totalPages}
-┃ 🧮 Total: ${arrayInfo.length}
-┣━━━━━━━━━━━━━━━━┫
+    const text = `
+ 📜 𝐂𝐎𝐌𝐌𝐀𝐍𝐃 𝐋𝐈𝐒𝐓 📜
+
+  📄 Page: ${page}/${totalPages}
+  🧮 Total: ${arrayInfo.length}
+
 ${msg}
-┣━━━━━━━━━━━━━━━━┫
-┃ ⚙ Prefix: ${prefix}
-┃ 🤖 Bot Name: ${global.config.BOTNAME || "Mamun 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭"}
-┃ 👑 Owner: M A M U N I S L A M
-╰━━━━━━━━━━━━━━━━╯`;
 
-    const files = await downloadImages();
-    const attachments = files.map(f => fs.createReadStream(f));  
-    api.sendMessage({ body: text, attachment: attachments }, threadID, () => {  
-        files.forEach(f => fs.unlinkSync(f));  
-    }, messageID);  
+   ⚙ Prefix: ${prefix}
+   🤖 Bot Name: ${global.config.BOTNAME || "Mamun 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭"}
+ . 👑 Owner: Mamun
+`;
+
+    downloadImages(files => {  
+        const attachments = files.map(f => fs.createReadStream(f));  
+        api.sendMessage({ body: text, attachment: attachments }, threadID, () => {  
+            files.forEach(f => fs.unlinkSync(f));  
+        }, messageID);  
+    });  
 };
