@@ -5,10 +5,10 @@ const { createCanvas, loadImage } = require("canvas");
 
 module.exports.config = {
   name: "hack",
-  version: "3.0.0",
+  version: "4.0.0",
   hasPermssion: 0,
-  credits: "Fixed - Simple Version",
-  description: "হ্যাক ইমেজ কমান্ড",
+  credits: "Profile Fixed 100%",
+  description: "হ্যাক ইমেজ - প্রোফাইল দেখাবে",
   commandCategory: "fun",
   usages: "hack @mention",
   cooldowns: 5
@@ -23,81 +23,129 @@ module.exports.run = async function ({ api, event, Users }) {
     const cacheDir = path.join(__dirname, "cache");
     await fs.ensureDir(cacheDir);
 
-    // ✅ সরাসরি Facebook Graph API ব্যবহার
-    const avatarUrl = `https://graph.facebook.com/${uid}/picture?type=large`;
-    const avatarPath = path.join(cacheDir, `avatar_${Date.now()}.png`);
-    const outPath = path.join(cacheDir, `hack_${Date.now()}.png`);
+    const timestamp = Date.now();
+    const avatarPath = path.join(cacheDir, `avatar_${timestamp}.png`);
+    const outPath = path.join(cacheDir, `hack_${timestamp}.png`);
 
-    console.log(`📥 Downloading: ${avatarUrl}`);
+    // ৩টা URL try করবো
+    const urls = [
+      `https://graph.facebook.com/${uid}/picture?type=large&width=500&height=500`,
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=500&background=1e293b&color=00ff41&bold=true&font-size=0.6`,
+      `https://avatar.ams3.digitaloceanspaces.com/?name=${encodeURIComponent(name)}&size=500`
+    ];
 
-    // Avatar download
-    const response = await axios.get(avatarUrl, { 
-      responseType: "arraybuffer", 
-      timeout: 10000 
-    });
-    
-    await fs.writeFile(avatarPath, Buffer.from(response.data));
-    console.log("✅ Avatar downloaded");
+    let avatarBuffer;
+    for (let url of urls) {
+      try {
+        console.log(`Trying: ${url}`);
+        const response = await axios.get(url, { 
+          responseType: "arraybuffer", 
+          timeout: 8000,
+          headers: { 'User-Agent': 'Mozilla/5.0' }
+        });
+        avatarBuffer = Buffer.from(response.data);
+        console.log("✅ Avatar downloaded successfully");
+        break;
+      } catch (e) {
+        console.log(`❌ Failed: ${url}`);
+        continue;
+      }
+    }
 
-    // Canvas
+    if (!avatarBuffer) throw new Error("No avatar found");
+
+    await fs.writeFile(avatarPath, avatarBuffer);
+
+    // Canvas - NO CLIP MASK (সহজ method)
     const canvas = createCanvas(900, 500);
     const ctx = canvas.getContext("2d");
 
-    // Dark background
+    // Background
     ctx.fillStyle = "#0a0f1e";
     ctx.fillRect(0, 0, 900, 500);
 
     // Load avatar
     const avatar = await loadImage(avatarPath);
     
-    // Circular avatar (সহজ উপায়)
+    // Square avatar with rounded corners (ক্লিপ ছাড়া)
+    const avatarX = 50;
+    const avatarY = 60;
+    const avatarSize = 220;
+
+    // Rounded rectangle path
     ctx.save();
     ctx.beginPath();
-    ctx.arc(140, 160, 110, 0, Math.PI * 2);
+    ctx.moveTo(avatarX + 20, avatarY);
+    ctx.lineTo(avatarX + avatarSize - 20, avatarY);
+    ctx.quadraticCurveTo(avatarX + avatarSize, avatarY, avatarX + avatarSize, avatarY + 20);
+    ctx.lineTo(avatarX + avatarSize, avatarY + avatarSize - 20);
+    ctx.quadraticCurveTo(avatarX + avatarSize, avatarY + avatarSize, avatarX + avatarSize - 20, avatarY + avatarSize);
+    ctx.lineTo(avatarX + 20, avatarY + avatarSize);
+    ctx.quadraticCurveTo(avatarX, avatarY + avatarSize, avatarX, avatarY + avatarSize - 20);
+    ctx.lineTo(avatarX, avatarY + 20);
+    ctx.quadraticCurveTo(avatarX, avatarY, avatarX + 20, avatarY);
+    ctx.closePath();
+    
     ctx.clip();
-    ctx.drawImage(avatar, 30, 50, 220, 220);
+    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
     ctx.restore();
 
-    // Green border
-    ctx.strokeStyle = "#00ff41";
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.arc(140, 160, 110, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // Texts
+    // Green glowing border
     ctx.shadowColor = "#00ff41";
-    ctx.shadowBlur = 10;
+    ctx.shadowBlur = 20;
+    ctx.strokeStyle = "#00ff41";
+    ctx.lineWidth = 6;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 25);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Text content
+    ctx.shadowColor = "rgba(0,255,65,0.5)";
+    ctx.shadowBlur = 12;
 
     ctx.fillStyle = "#00ff41";
-    ctx.font = 'bold 35px Arial';
-    ctx.fillText("🔥 SYSTEM HACKED 🔥", 300, 100);
+    ctx.font = 'bold 38px Arial';
+    ctx.textAlign = "left";
+    ctx.fillText("🔥 SYSTEM BREACHED 🔥", 320, 110);
 
     ctx.fillStyle = "#ffffff";
-    ctx.font = 'bold 32px Arial';
-    ctx.fillText(`TARGET: ${name}`, 300, 160);
+    ctx.font = 'bold 34px Arial';
+    ctx.fillText(`TARGET: ${name}`, 320, 170);
 
     ctx.fillStyle = "#00d4ff";
     ctx.font = '28px Arial';
-    ctx.fillText("📊 Data Extracted: 100%", 300, 220);
-    ctx.fillText("💾 Passwords: COMPROMISED", 300, 260);
+    ctx.fillText("📊 Data Extracted: 100%", 320, 230);
+    ctx.fillText("🔑 Passwords: COMPROMISED", 320, 270);
 
+    ctx.shadowBlur = 0;
     ctx.fillStyle = "#ff0040";
-    ctx.font = 'bold 34px Arial';
-    ctx.fillText("✅ HACK SUCCESSFUL", 300, 320);
+    ctx.font = 'bold 36px Arial';
+    ctx.fillText("✅ HACK COMPLETED", 320, 330);
 
     // Progress bar
-    ctx.fillStyle = "rgba(0,255,65,0.2)";
-    ctx.fillRect(300, 370, 450, 30);
+    ctx.fillStyle = "rgba(0,255,65,0.15)";
+    ctx.fillRect(320, 380, 480, 35);
+    ctx.shadowColor = "#00ff41";
+    ctx.shadowBlur = 15;
     ctx.fillStyle = "#00ff41";
-    ctx.fillRect(300, 370, 430, 30);
+    ctx.fillRect(320, 380, 460, 35);
 
-    // Save & Send
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#ffffff";
+    ctx.font = 'bold 22px Arial';
+    ctx.fillText("COMPLETE ACCESS GRANTED", 340, 407);
+
+    // Save
     const buffer = canvas.toBuffer("image/png");
     await fs.writeFile(outPath, buffer);
 
     await api.sendMessage({
-      body: `💀 ${name} এর সিস্টেম হ্যাক হয়ে গেছে! 💀`,
+      body: `💀 ${name} এর সিস্টেম সম্পূর্ণ হ্যাক! 💀
+
+✅ Passwords, data সব কম্প্রোমাইজড!`,
       attachment: fs.createReadStream(outPath)
     }, threadID, messageID);
 
@@ -106,22 +154,5 @@ module.exports.run = async function ({ api, event, Users }) {
     fs.unlinkSync(outPath);
 
   } catch (error) {
-    console.error("Hack error:", error.message);
-    
-    // Error message
-    return api.sendMessage(
-      `❌ ${name} এর প্রোফাইল লোড করতে সমস্যা!
-
-` +
-      `🔧 সমাধান:
-` +
-      `• ইন্টারনেট চেক করুন
-` +
-      `• Facebook profile public কিনা চেক করুন
-` +
-      `• আবার চেষ্টা করুন`, 
-      threadID, 
-      messageID
-    );
-  }
-};
+    console.error("Hack error:", error);
+    return api.sendMes
