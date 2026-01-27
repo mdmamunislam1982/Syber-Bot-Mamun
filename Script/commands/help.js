@@ -108,7 +108,7 @@ const text = `╭──────•◈•──────╮\n│𝗨𝘀�
     var link = [
 "", "var link = [
   "https://i.imgur.com/ABC123x.jpg"
-]; ", "https://i.imgur.com/WXQIgMz.jpeg", "https://i.postimg.cc/QdgH08j6/Messenger-creation-C2-A39-DCF-A8-E7-4-FC7-8715-2559476-FEEF4.gif",
+];"https://i.imgur.com/WXQIgMz.jpeg", "https://i.postimg.cc/QdgH08j6/Messenger-creation-C2-A39-DCF-A8-E7-4-FC7-8715-2559476-FEEF4.gif",
 "",
 "var link = [
   "https://i.imgur.com/dWQGPtL.jpg"
