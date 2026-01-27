@@ -1,14 +1,14 @@
 const axios = require("axios");
 const fs = require("fs-extra");
 const path = require("path");
-const { createCanvas, loadImage } = require("canvas");
+const { createCanvas, loadImage, registerFont } = require("canvas");
 
 module.exports.config = {
   name: "hack",
-  version: "4.0.0",
+  version: "5.0.0",
   hasPermssion: 0,
-  credits: "Profile Fixed 100%",
-  description: "হ্যাক ইমেজ - প্রোফাইল দেখাবে",
+  credits: "Profile Fixed - Generated Avatar",
+  description: "হ্যাক ইমেজ - সুন্দর avatar",
   commandCategory: "fun",
   usages: "hack @mention",
   cooldowns: 5
@@ -27,125 +27,126 @@ module.exports.run = async function ({ api, event, Users }) {
     const avatarPath = path.join(cacheDir, `avatar_${timestamp}.png`);
     const outPath = path.join(cacheDir, `hack_${timestamp}.png`);
 
-    // ৩টা URL try করবো
-    const urls = [
-      `https://graph.facebook.com/${uid}/picture?type=large&width=500&height=500`,
-      `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=500&background=1e293b&color=00ff41&bold=true&font-size=0.6`,
-      `https://avatar.ams3.digitaloceanspaces.com/?name=${encodeURIComponent(name)}&size=500`
-    ];
+    // ✅ Name থেকে সুন্দর avatar generate
+    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=300&background=1a1a2e&color=00ff41&bold=true&font-size=0.6`;
+    
+    console.log(`🎨 Generating avatar for: ${name}`);
+    
+    const response = await axios.get(avatarUrl, { 
+      responseType: "arraybuffer", 
+      timeout: 10000 
+    });
+    
+    await fs.writeFile(avatarPath, Buffer.from(response.data));
+    console.log("✅ Avatar generated successfully");
 
-    let avatarBuffer;
-    for (let url of urls) {
-      try {
-        console.log(`Trying: ${url}`);
-        const response = await axios.get(url, { 
-          responseType: "arraybuffer", 
-          timeout: 8000,
-          headers: { 'User-Agent': 'Mozilla/5.0' }
-        });
-        avatarBuffer = Buffer.from(response.data);
-        console.log("✅ Avatar downloaded successfully");
-        break;
-      } catch (e) {
-        console.log(`❌ Failed: ${url}`);
-        continue;
-      }
-    }
-
-    if (!avatarBuffer) throw new Error("No avatar found");
-
-    await fs.writeFile(avatarPath, avatarBuffer);
-
-    // Canvas - NO CLIP MASK (সহজ method)
-    const canvas = createCanvas(900, 500);
+    // Canvas
+    const canvas = createCanvas(1000, 550);
     const ctx = canvas.getContext("2d");
 
-    // Background
-    ctx.fillStyle = "#0a0f1e";
-    ctx.fillRect(0, 0, 900, 500);
+    // Dark gradient background
+    const gradient = ctx.createLinearGradient(0, 0, 0, 550);
+    gradient.addColorStop(0, "#0a0f1e");
+    gradient.addColorStop(0.5, "#1a1a2e");
+    gradient.addColorStop(1, "#16213e");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1000, 550);
 
     // Load avatar
     const avatar = await loadImage(avatarPath);
     
-    // Square avatar with rounded corners (ক্লিপ ছাড়া)
-    const avatarX = 50;
-    const avatarY = 60;
-    const avatarSize = 220;
+    // Perfect circular avatar
+    const avatarSize = 260;
+    const centerX = 80 + avatarSize/2;
+    const centerY = 120 + avatarSize/2;
 
-    // Rounded rectangle path
+    // Glow effect
+    ctx.shadowColor = "#00ff88";
+    ctx.shadowBlur = 25;
+    
+    // Outer glow circle
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, avatarSize/2 + 15, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0, 255, 136, 0.2)";
+    ctx.fill();
+
+    // Clip perfect circle
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(avatarX + 20, avatarY);
-    ctx.lineTo(avatarX + avatarSize - 20, avatarY);
-    ctx.quadraticCurveTo(avatarX + avatarSize, avatarY, avatarX + avatarSize, avatarY + 20);
-    ctx.lineTo(avatarX + avatarSize, avatarY + avatarSize - 20);
-    ctx.quadraticCurveTo(avatarX + avatarSize, avatarY + avatarSize, avatarX + avatarSize - 20, avatarY + avatarSize);
-    ctx.lineTo(avatarX + 20, avatarY + avatarSize);
-    ctx.quadraticCurveTo(avatarX, avatarY + avatarSize, avatarX, avatarY + avatarSize - 20);
-    ctx.lineTo(avatarX, avatarY + 20);
-    ctx.quadraticCurveTo(avatarX, avatarY, avatarX + 20, avatarY);
-    ctx.closePath();
-    
+    ctx.arc(centerX, centerY, avatarSize/2, 0, Math.PI * 2);
     ctx.clip();
-    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
+    ctx.drawImage(avatar, 80, 120, avatarSize, avatarSize);
     ctx.restore();
 
-    // Green glowing border
-    ctx.shadowColor = "#00ff41";
-    ctx.shadowBlur = 20;
-    ctx.strokeStyle = "#00ff41";
+    // Glowing border
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = "#00ff88";
     ctx.lineWidth = 6;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+    ctx.shadowColor = "#00ff88";
+    ctx.shadowBlur = 20;
     ctx.beginPath();
-    ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 25);
+    ctx.arc(centerX, centerY, avatarSize/2, 0, Math.PI * 2);
     ctx.stroke();
+
+    // Reset shadow for text
     ctx.shadowBlur = 0;
+    ctx.shadowColor = "rgba(0,255,136,0.8)";
 
-    // Text content
-    ctx.shadowColor = "rgba(0,255,65,0.5)";
-    ctx.shadowBlur = 12;
-
-    ctx.fillStyle = "#00ff41";
-    ctx.font = 'bold 38px Arial';
+    // Main title
+    ctx.fillStyle = "#00ff88";
+    ctx.font = 'bold 42px Arial';
     ctx.textAlign = "left";
-    ctx.fillText("🔥 SYSTEM BREACHED 🔥", 320, 110);
+    ctx.shadowBlur = 15;
+    ctx.fillText("🔥 SYSTEM HACK DETECTED 🔥", 380, 140);
 
+    // Target info
     ctx.fillStyle = "#ffffff";
-    ctx.font = 'bold 34px Arial';
-    ctx.fillText(`TARGET: ${name}`, 320, 170);
+    ctx.font = 'bold 38px Arial';
+    ctx.shadowBlur = 10;
+    ctx.fillText(`🎯 TARGET: ${name}`, 380, 210);
 
+    // Data breach info
     ctx.fillStyle = "#00d4ff";
-    ctx.font = '28px Arial';
-    ctx.fillText("📊 Data Extracted: 100%", 320, 230);
-    ctx.fillText("🔑 Passwords: COMPROMISED", 320, 270);
+    ctx.font = '32px Arial';
+    ctx.shadowBlur = 8;
+    ctx.fillText("💾 Data Extracted: 100%", 380, 270);
+    ctx.fillText("🔑 Passwords: COMPROMISED", 380, 315);
+    ctx.fillText("📱 Messages: DOWNLOADED", 380, 360);
 
+    // Status
     ctx.shadowBlur = 0;
-    ctx.fillStyle = "#ff0040";
-    ctx.font = 'bold 36px Arial';
-    ctx.fillText("✅ HACK COMPLETED", 320, 330);
+    ctx.fillStyle = "#ff3366";
+    ctx.font = 'bold 40px Arial';
+    ctx.shadowColor = "#ff3366";
+    ctx.shadowBlur = 20;
+    ctx.fillText("✅ HACK SUCCESSFUL", 380, 430);
 
     // Progress bar
-    ctx.fillStyle = "rgba(0,255,65,0.15)";
-    ctx.fillRect(320, 380, 480, 35);
-    ctx.shadowColor = "#00ff41";
-    ctx.shadowBlur = 15;
-    ctx.fillStyle = "#00ff41";
-    ctx.fillRect(320, 380, 460, 35);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "rgba(0,255,136,0.2)";
+    ctx.fillRect(380, 470, 520, 40);
+    ctx.shadowColor = "#00ff88";
+    ctx.shadowBlur = 20;
+    ctx.fillStyle = "#00ff88";
+    ctx.fillRect(380, 470, 500, 40);
 
+    // Progress text
     ctx.shadowBlur = 0;
     ctx.fillStyle = "#ffffff";
-    ctx.font = 'bold 22px Arial';
-    ctx.fillText("COMPLETE ACCESS GRANTED", 340, 407);
+    ctx.font = 'bold 26px Arial';
+    ctx.fillText("FULL SYSTEM ACCESS GRANTED", 400, 500);
 
-    // Save
+    // Save image
     const buffer = canvas.toBuffer("image/png");
     await fs.writeFile(outPath, buffer);
 
     await api.sendMessage({
-      body: `💀 ${name} এর সিস্টেম সম্পূর্ণ হ্যাক! 💀
+      body: `💀 ${name} এর সিস্টেম সম্পূর্ণভাবে হ্যাক হয়েছে! 💀
 
-✅ Passwords, data সব কম্প্রোমাইজড!`,
+` +
+            `✅ Passwords, messages, data - সব কম্প্রোমাইজড!
+` +
+            `⚡ Generated avatar ব্যবহার করা হয়েছে`,
       attachment: fs.createReadStream(outPath)
     }, threadID, messageID);
 
@@ -154,5 +155,12 @@ module.exports.run = async function ({ api, event, Users }) {
     fs.unlinkSync(outPath);
 
   } catch (error) {
-    console.error("Hack error:", error);
-    return api.sendMes
+    console.error("Hack error:", error.message);
+    return api.sendMessage(
+      `❌ ${name} এর জন্য হ্যাক করতে সমস্যা!
+
+Console চেক করুন`, 
+      threadID, messageID
+    );
+  }
+};
