@@ -29,14 +29,14 @@ module.exports.run = async function ({ api, event, Users }) {
     const outPath = path.join(cacheDir, "hack.png");
 
     // প্রোফাইল ছবি ডাউনলোড
-    const avatar = (
-      await axios.get(
-        `https://graph.facebook.com/${uid}/picture?width=512&height=512`,
-        { responseType: "arraybuffer" }
-      )
-    ).data;
-    fs.writeFileSync(avatarPath, Buffer.from(avatar));
+    const userInfo = await api.getUserInfo(uid);
+const avatarUrl = userInfo[uid].profileUrl;
 
+const avatar = (
+  await axios.get(avatarUrl, { responseType: "arraybuffer" })
+).data;
+
+fs.writeFileSync(avatarPath, Buffer.from(avatar));
     // Canvas তৈরি
     const canvas = createCanvas(850, 420);
     const ctx = canvas.getContext("2d");
