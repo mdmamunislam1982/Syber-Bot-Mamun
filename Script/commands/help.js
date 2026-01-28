@@ -31,7 +31,7 @@ module.exports.languages = {
 
 ⚙ Prefix: %8
 🤖 Bot Name: %9
-👑 Owner: Mamun
+👑 Owner: Md Mamun Islam 
 `,
     user: "User",
     adminGroup: "Admin Group",
@@ -41,8 +41,8 @@ module.exports.languages = {
 
 /* ✅ Direct image links only */
 const helpImages = [
-  ![image]"(https://i.imgur.com/qAjChmF.jpeg)",
-  "https://i.imgur.com/5QnK2s9.jpg"
+  "https://i.imgur.com/QTaJUfp.jpeg",
+  "https://i.imgur.com/kOIUm2i.jpeg",
 ];
 
 function downloadImages(callback) {
