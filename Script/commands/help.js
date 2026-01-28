@@ -41,7 +41,7 @@ module.exports.languages = {
 
 /* ✅ Direct image links only */
 const helpImages = [
-  "https://i.imgur.com/PhA9d1e.jpg",
+  "https://i.imgur.com/qAjChmF.jpeg",
   "https://i.imgur.com/5QnK2s9.jpg"
 ];
 
