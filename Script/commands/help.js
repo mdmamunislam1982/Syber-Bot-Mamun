@@ -47,7 +47,7 @@ const helpImages = [
   "attachment": {
     "type": "image",
     "payload": {
-      "url": "https://i.imgur.com/abcdefgh.jpg"
+      "url": "https://imgur.com/a/Zz5G3oI.jpg"
     }
   }
 }",
