@@ -42,20 +42,10 @@ module.exports.languages = {
 
 // 🔹 এখানে আপনার ফটো Imgur লিংক করে বসাবেন ✅
 const helpImages = [
-    "https://imgur.com/a/Zz5G3oI.jpeg",
-    "{
-  "attachment": {
-    "type": "image",
-    "payload": {
-      "url": "https://imgur.com/a/Zz5G3oI.jpg"
-    }
-  }
-}",
-    "https://i.imgur.com/8WvpgUL.jpeg",
-    "https://i.imgur.com/sxSn1K3.jpeg"
+    var link = [
+  "https://i.imgur.com/PhA9d1e.jpg",
+  "https://i.imgur.com/5QnK2s9.jpg"
 ];
-
-
 function downloadImages(callback) {
     const randomUrl = helpImages[Math.floor(Math.random() * helpImages.length)];
     const filePath = path.join(__dirname, "cache", "help_random.jpg");
