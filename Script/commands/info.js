@@ -62,10 +62,10 @@ module.exports.run = async function ({ api, event, args, Users, permssion, getTe
  ];
  var link = [
  "https://i.postimg.cc/QdgH08j6/Messenger-creation-C2-A39-DCF-A8-E7-4-FC7-8715-2559476-FEEF4.gif",
- "https://i.imgur.com/WXQIgMz.jpeg",
+ "https://i.imgur.com/6scYJWK.jpeg",
  "https://i.postimg.cc/QdgH08j6/Messenger-creation-C2-A39-DCF-A8-E7-4-FC7-8715-2559476-FEEF4.gif",
- "https://i.imgur.com/WXQIgMz.jpeg",
- "https://i.imgur.com/WXQIgMz.jpeg",
+ "https://i.imgur.com/kOIUm2i.jpeg",
+ "https://i.imgur.com/6scYJWK.jpeg",
  ];
 
  var i = 1;
@@ -98,7 +98,7 @@ module.exports.config = {
  name: "info",
  version: "1.2.6",
  hasPermssion: 0,
- credits: "ᴮm᭄✿Ɱaϻꪊn★⧽࿐",
+ credits: "Ɱaϻꪊn",
  description: "🥰আসসালামু আলাইকুম 🥰",
  commandCategory: "For users",
  hide:true,
@@ -158,10 +158,10 @@ module.exports.run = async function ({ api, event, args, Users, permssion, getTe
  ];
  var link = [
  "https://i.postimg.cc/QdgH08j6/Messenger-creation-C2-A39-DCF-A8-E7-4-FC7-8715-2559476-FEEF4.gif",
- "https://i.imgur.com/WXQIgMz.jpeg",
+ "https://i.imgur.com/6scYJWK.jpeg",
  "https://i.postimg.cc/QdgH08j6/Messenger-creation-C2-A39-DCF-A8-E7-4-FC7-8715-2559476-FEEF4.gif",
- "https://i.imgur.com/WXQIgMz.jpeg",
- "https://i.imgur.com/WXQIgMz.jpeg",
+ "https://i.imgur.com/6scYJWK.jpeg",
+ "https://i.imgur.com/kOIUm2i.jpeg",
 
  ]; 
  var i = 1;
