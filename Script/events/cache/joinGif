@@ -1,1 +1,66 @@
+const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 
+module.exports.config = {
+  name: "islamicwelcome",
+  eventType: ["log:subscribe"],
+  version: "1.0.0",
+  credits: "RAHAT",
+  description: "Islamic welcome with image"
+};
+
+module.exports.run = async ({ api, event }) => {
+  const threadID = event.threadID;
+
+  try {
+    const addedUsers = event.logMessageData.addedParticipants;
+
+    for (const user of addedUsers) {
+      const userName = user.fullName || "New Member";
+      const userID = user.userFbId;
+
+      // 🖼️ Islamic Welcome Image (change link if you want)
+      const imgUrl =
+        "https://i.imgur.com/8QZQZQp.jpg"; // Islamic welcome image
+
+      const imgPath = path.join(__dirname, "welcome.jpg");
+      const img = (await axios.get(imgUrl, { responseType: "arraybuffer" })).data;
+      fs.writeFileSync(imgPath, Buffer.from(img));
+
+      const message =
+`🌙✨ ইসলামী শুভেচ্ছা ✨🌙
+
+🤍 আসসালামু আলাইকুম
+👤 ${userName}
+
+📿 আমাদের এই গ্রুপে আপনাকে স্বাগতম
+🤲 আল্লাহ আপনাকে উত্তম প্রতিদান দান করুন
+
+📖 “যে ব্যক্তি সালাম প্রচার করবে,
+সে জান্নাতে প্রবেশ করবে” (হাদিস)
+
+🕌 গ্রুপের নিয়ম মেনে চলবেন
+🤝 সবাইকে সম্মান করবেন
+
+— Islamic Bot 🤖`;
+
+      api.sendMessage(
+        {
+          body: message,
+          attachment: fs.createReadStream(imgPath),
+          mentions: [
+            {
+              tag: userName,
+              id: userID
+            }
+          ]
+        },
+        threadID,
+        () => fs.unlinkSync(imgPath)
+      );
+    }
+  } catch (err) {
+    console.log("Islamic Welcome Error:", err);
+  }
+};
