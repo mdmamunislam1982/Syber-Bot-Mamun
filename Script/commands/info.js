@@ -2,7 +2,7 @@ module.exports.config = {
  name: "info",
  version: "1.2.6",
  hasPermssion: 0,
- credits: "ᴮm᭄✿Ɱaϻꪊn★⧽࿐",
+ credits: "Md Mamun",
  description: "info bot owner",
  commandCategory: "For users",
  hide:true,
@@ -64,7 +64,7 @@ module.exports.run = async function ({ api, event, args, Users, permssion, getTe
  "https://i.postimg.cc/QdgH08j6/Messenger-creation-C2-A39-DCF-A8-E7-4-FC7-8715-2559476-FEEF4.gif",
  "https://i.imgur.com/6scYJWK.jpeg",
  "https://i.postimg.cc/QdgH08j6/Messenger-creation-C2-A39-DCF-A8-E7-4-FC7-8715-2559476-FEEF4.gif",
- "https://i.imgur.com/kOIUm2i.jpeg",
+ "https://i.imgur.com/6scYJWK.jpeg",
  "https://i.imgur.com/6scYJWK.jpeg",
  ];
 
@@ -98,7 +98,7 @@ module.exports.config = {
  name: "info",
  version: "1.2.6",
  hasPermssion: 0,
- credits: "Ɱaϻꪊn",
+ credits: "Md Mamun",
  description: "🥰আসসালামু আলাইকুম 🥰",
  commandCategory: "For users",
  hide:true,
@@ -161,7 +161,7 @@ module.exports.run = async function ({ api, event, args, Users, permssion, getTe
  "https://i.imgur.com/6scYJWK.jpeg",
  "https://i.postimg.cc/QdgH08j6/Messenger-creation-C2-A39-DCF-A8-E7-4-FC7-8715-2559476-FEEF4.gif",
  "https://i.imgur.com/6scYJWK.jpeg",
- "https://i.imgur.com/kOIUm2i.jpeg",
+ "https://i.imgur.com/6scYJWK.jpeg",
 
  ]; 
  var i = 1;
@@ -186,7 +186,7 @@ module.exports.run = async function ({ api, event, args, Users, permssion, getTe
  `🍀----আসসালামু আলাইকুম----🍀
 
 ┏━━•❅•••❈•••❈•••❅•━━┓\n\n「 ${namebot} 」\n\n┗━━•❅•••❈•••❈•••❅•━━┛ \n\n______________________________\n\n↓↓_𝗥𝗢𝗕𝗢𝗧 𝗦𝗬𝗦𝗧𝗘𝗠 𝗜𝗡𝗙𝗢_↓↓\n\n» 𝗣𝗿𝗲𝗳𝗶𝘅 𝘀𝘆𝘀𝘁𝗲𝗺: ${PREFIX}\n\n» 𝗣𝗿𝗲𝗳𝗶𝘅 𝗯𝗼𝘅: ${prefix}\n\n» 𝗧𝗼𝘁𝗮𝗹 𝗠𝗼𝗱𝘂𝗹𝗲𝘀: ${commands.size}\n\n» 𝗣𝗶𝗻𝗴: ${Date.now() - dateNow}ms\n______________________________\n\n ↓↓_𝗥𝗢𝗕𝗢𝗧 𝗢𝗪𝗡𝗘𝗥 𝗜𝗡𝗙𝗢_↓↓\n\n 
-𝗡𝗔𝗠𝗘 :>md mamun islam
+𝗡𝗔𝗠𝗘 :>MAMUN
 
 𝗢𝘄𝗻𝗲𝗿 𝗜𝗱 𝗹𝗶𝗻𝗸:☞https://www.facebook.com/md.mamun.islam3210
 
