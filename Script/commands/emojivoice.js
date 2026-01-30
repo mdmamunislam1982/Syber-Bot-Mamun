@@ -3,13 +3,13 @@ const path = require("path");
 const axios = require("axios");
 
 module.exports.config = {
-  name: "emoji_voice",
+  name: "emoji",
   version: "1.0.0",
   hasPermssion: 0,
   credits: "Mamun",
   description: "Emoji দিলে voice পাঠাবে",
-  commandCategory: "noprefix",
-  usages: "😍 😘 🥰",
+  commandCategory: "fun",
+  usages: "emoji 😍",
   cooldowns: 3
 };
 
@@ -21,14 +21,20 @@ const emojiAudioMap = {
   "😭": "https://files.catbox.moe/itm4g0.mp3"
 };
 
-module.exports.handleEvent = async function ({ api, event }) {
+module.exports.run = async function ({ api, event, args }) {
   try {
-    if (!event.body) return;
+    if (!args[0]) {
+      return api.sendMessage(
+        "❌ Emoji দাও\nউদাহরণ: emoji 😍",
+        event.threadID,
+        event.messageID
+      );
+    }
 
-    // 🔥 Mirai emoji normalize
-    const msg = event.body.trim().replace(/\uFE0F/g, "");
-
-    if (!emojiAudioMap[msg]) return;
+    const emoji = args[0].replace(/\uFE0F/g, "");
+    if (!emojiAudioMap[emoji]) {
+      return api.sendMessage("❌ এই emoji support করে না", event.threadID);
+    }
 
     const cacheDir = path.join(__dirname, "cache");
     if (!fs.existsSync(cacheDir)) {
@@ -37,7 +43,7 @@ module.exports.handleEvent = async function ({ api, event }) {
 
     const filePath = path.join(cacheDir, `${Date.now()}.mp3`);
 
-    const res = await axios.get(emojiAudioMap[msg], {
+    const res = await axios.get(emojiAudioMap[emoji], {
       responseType: "stream"
     });
 
@@ -53,9 +59,8 @@ module.exports.handleEvent = async function ({ api, event }) {
       );
     });
 
-  } catch (err) {
-    console.log("emoji_voice error:", err);
+  } catch (e) {
+    api.sendMessage("⚠️ Error হয়েছে", event.threadID);
+    console.log(e);
   }
 };
-
-module.exports.run = () => {};
