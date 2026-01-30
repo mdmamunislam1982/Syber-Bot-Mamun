@@ -24,7 +24,7 @@ module.exports.run = async ({ api, event }) => {
       const imgUrl =
         "https://i.imgur.com/8QZQZQp.jpg"; // Islamic welcome image
 
-      const imgPath = path.join(__dirname, "welcome.jpg");
+      const imgPath = path.join(__dirname, "joinGif");
       const img = (await axios.get(imgUrl, { responseType: "arraybuffer" })).data;
       fs.writeFileSync(imgPath, Buffer.from(img));
 
