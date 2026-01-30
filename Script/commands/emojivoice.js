@@ -1,28 +1,20 @@
-/**
- * EMOJI VOICE PROTECTED FILE
- * Credits: Mamun Islam 
- * Anti-Edit + Hidden Cache + Integrity Lock
- */
-
 const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
-const crypto = require("crypto");
 
-/* ================== CONFIG (LOCKED) ================== */
 module.exports.config = {
   name: "emoji_voice",
-  version: "10.0",
+  version: "1.0.0",
   hasPermssion: 0,
-  credits: "Mamun",
-  description: "Emoji দিলে কিউট মেয়ের ভয়েস পাঠাবে 😍",
+  credits: "Clean by Mamun",
+  description: "Emoji দিলে voice পাঠাবে 🎧",
   commandCategory: "noprefix",
-  usages: "😘🥰😍",
-  cooldowns: 5
+  usages: "😍 😘 🥰",
+  cooldowns: 3
 };
 
-/* ================== EMOJI MAP (LOCKED) ================== */
-const emojiAudioMap = Object.freeze({
+/* ===== EMOJI → AUDIO MAP ===== */
+const emojiAudioMap = {
   "🥱": "https://files.catbox.moe/9pou40.mp3",
   "😁": "https://files.catbox.moe/60cwcg.mp3",
   "😌": "https://files.catbox.moe/epqwbx.mp3",
@@ -54,53 +46,29 @@ const emojiAudioMap = Object.freeze({
   "😩": "https://files.catbox.moe/b4m5aj.mp3",
   "🫣": "https://files.catbox.moe/ttb6hi.mp3",
   "🐸": "https://files.catbox.moe/utl83s.mp3"
-});
+};
 
-/* ================== FILE INTEGRITY LOCK ================== */
-const __self = fs.readFileSync(__filename);
-const __hash = crypto.createHash("sha256").update(__self).digest("hex");
-
-// change করলে এই hash মিলবে না → auto stop
-const LOCK_HASH = __hash;
-
-function integrityCheck() {
-  const nowHash = crypto.createHash("sha256")
-    .update(fs.readFileSync(__filename))
-    .digest("hex");
-  return nowHash === LOCK_HASH;
-}
-
-/* ================== HIDDEN CACHE ================== */
-const hiddenCache = path.join(
-  __dirname,
-  "." + crypto.createHash("md5").update(__filename).digest("hex").slice(0, 8)
-);
-
-/* ================== EVENT ================== */
+/* ===== EVENT ===== */
 module.exports.handleEvent = async ({ api, event }) => {
   try {
-    if (!integrityCheck()) return; // silent kill if edited
-
     const { threadID, messageID, body } = event;
-    if (!body || body.length > 2) return;
+    if (!body) return;
 
     const emoji = body.trim();
     const audioUrl = emojiAudioMap[emoji];
     if (!audioUrl) return;
 
-    if (!fs.existsSync(hiddenCache)) fs.mkdirSync(hiddenCache);
+    const cacheDir = path.join(__dirname, "cache");
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
 
     const filePath = path.join(
-      hiddenCache,
-      crypto.randomBytes(6).toString("hex") + ".mp3"
+      cacheDir,
+      `${Date.now()}_${Math.random().toString(36).slice(2)}.mp3`
     );
 
-    const res = await axios({
-      method: "GET",
-      url: audioUrl,
-      responseType: "stream"
-    });
-
+    const res = await axios.get(audioUrl, { responseType: "stream" });
     const writer = fs.createWriteStream(filePath);
     res.data.pipe(writer);
 
@@ -108,15 +76,15 @@ module.exports.handleEvent = async ({ api, event }) => {
       api.sendMessage(
         { attachment: fs.createReadStream(filePath) },
         threadID,
-        () => fs.unlink(filePath, () => {}),
+        () => fs.unlinkSync(filePath),
         messageID
       );
     });
 
-  } catch (e) {
-    // no error message → protection
+  } catch (err) {
+    console.log("Emoji voice error:", err);
   }
 };
 
-/* ================== EMPTY RUN ================== */
+/* ===== EMPTY RUN ===== */
 module.exports.run = () => {};
