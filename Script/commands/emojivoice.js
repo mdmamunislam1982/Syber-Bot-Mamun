@@ -1,6 +1,6 @@
 /**
  * EMOJI VOICE PROTECTED FILE
- * Credits: 𝐑𝐀𝐇𝐀𝐓 𝐊𝐇𝐀𝐍
+ * Credits: Mamun Islam 
  * Anti-Edit + Hidden Cache + Integrity Lock
  */
 
@@ -14,7 +14,7 @@ module.exports.config = {
   name: "emoji_voice",
   version: "10.0",
   hasPermssion: 0,
-  credits: "𝐑𝐀𝐇𝐀𝐓 𝐊𝐇𝐀𝐍",
+  credits: "Mamun",
   description: "Emoji দিলে কিউট মেয়ের ভয়েস পাঠাবে 😍",
   commandCategory: "noprefix",
   usages: "😘🥰😍",
