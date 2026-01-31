@@ -151,7 +151,7 @@ module.exports.handleEvent = async function({ api, event, args, Threads, Users }
      return api.sendMessage("️কি গো কলিজা তোমার কি মন খারাপ🥺", threadID);
    };
   
-   if ((event.body.toLowerCase() == "😒😒") || (event.body.toLowerCase() == "🙄")) {
+   if ((event.body.toLowerCase() == "😒😒") || (event.body.toLowerCase() == "🙄🙄")) {
      return api.sendMessage("️ এইদিকে ওইদিকে কি দেখো জানু আমার বস মামুন তোমার সামনে দেখো😘", threadID);
    };
 
