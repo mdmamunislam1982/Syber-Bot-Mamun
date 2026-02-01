@@ -1,7 +1,7 @@
 module.exports.config = {
 	name: "leave",
 	eventType: ["log:unsubscribe"],
-	version: "1.1.0",
+	version: "1.2.0",
 	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
 	description: "Notify when someone leaves the group",
 	dependencies: {
@@ -19,14 +19,14 @@ module.exports.onLoad = function () {
 	if (!existsSync(gifPath)) mkdirSync(gifPath, { recursive: true });
 };
 
-module.exports.run = async function ({ api, event, Users, Threads }) {
+module.exports.handleEvent = async function ({ api, event, Users, Threads }) {
 	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) return;
 
 	const { createReadStream, existsSync, readdirSync } = global.nodemodule["fs-extra"];
 	const { join } = global.nodemodule["path"];
 	const moment = require("moment-timezone");
 
-	const { threadID } = event;
+	const threadID = event.threadID;
 
 	const time = moment.tz("Asia/Dhaka").format("DD/MM/YYYY || HH:mm:ss");
 	const hours = parseInt(moment.tz("Asia/Dhaka").format("HH"));
@@ -43,7 +43,7 @@ module.exports.run = async function ({ api, event, Users, Threads }) {
 	const type =
 		event.author == userID ? "নিজে লিভ দিছে" : "এডমিন কিক দিছে";
 
-	let session =
+	const session =
 		hours <= 10 ? "𝙈𝙤𝙧𝙣𝙞𝙣𝙜" :
 		hours <= 12 ? "𝘼𝙛𝙩𝙚𝙧𝙉𝙤𝙤𝙣" :
 		hours <= 18 ? "𝙀𝙫𝙚𝙣𝙞𝙣𝙜" :
@@ -55,19 +55,24 @@ module.exports.run = async function ({ api, event, Users, Threads }) {
 ╰═════⊹⊱✫⊰⊹═════╯
 
 {session} || {name}
-তিনি চলে গেছে… তিনি ছিলেন গ্রুপের জোকার, ওনার চলে যাওয়ায় meme quality এখন full HD!
 
-Leave দিয়ে গেলো… তিনি গুপে important ছিল WiFi ছাড়া YouTube-এর মতো—একেবারে useless!
+তিনি চলে গেছে… তিনি ছিলেন গ্রুপের জোকার,
+ওনার চলে যাওয়ায় meme quality এখন full HD 😂
 
-Drama supplier gone… এখন গ্রুপের সবাই এখন শান্তিতে হাসতে পারবে!
+তিনি ছিল গ্রুপে ঠিক যেমন —
+WiFi ছাড়া YouTube 📵
+
+Drama supplier gone 😌
+এখন সবাই শান্তিতে হাসতে পারবে!
+
 ⏰ সময়: {time}
-⚙️ স্ট্যাটাস: {type}
+⚙️ স্ট্যাটাস: {type}`;
 
 	msg = msg
-		.replace(/\{name}/g, name)
-		.replace(/\{type}/g, type)
-		.replace(/\{session}/g, session)
-		.replace(/\{time}/g, time);
+		.replace(/{name}/g, name)
+		.replace(/{type}/g, type)
+		.replace(/{session}/g, session)
+		.replace(/{time}/g, time);
 
 	const gifFolder = join(__dirname, "cache", "leaveGif", "randomgif");
 	let formPush = { body: msg };
