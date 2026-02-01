@@ -1,43 +1,52 @@
 module.exports.config = {
   name: "leave",
   eventType: ["log:unsubscribe"],
-  version: "1.0.0",
+  version: "1.1.0",
   credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
-  description: "Thông báo bot hoặc người rời khỏi nhóm",
+  description: "Notify when someone leaves or is removed from the group",
   dependencies: {
     "fs-extra": "",
     "path": ""
   }
 };
 
-module.exports.run = async function({ api, event, Users, Threads }) {
+module.exports.run = async function ({ api, event, Users, Threads }) {
+  // bot leave ignore
   if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) return;
 
-  const { createReadStream, existsSync, mkdirSync } = global.nodemodule["fs-extra"];
-  const { join } = global.nodemodule["path"];
+  const fs = global.nodemodule["fs-extra"];
+  const path = global.nodemodule["path"];
   const { threadID } = event;
 
-  const data = global.data.threadData.get(parseInt(threadID)) || (await Threads.getData(threadID)).data;
-  const name = global.data.userName.get(event.logMessageData.leftParticipantFbId) || await Users.getNameUser(event.logMessageData.leftParticipantFbId);
+  const data =
+    global.data.threadData.get(parseInt(threadID)) ||
+    (await Threads.getData(threadID)).data;
 
-  const type = (event.author == event.logMessageData.leftParticipantFbId)
-    : "তোর সাহস কম না  গ্রুপের এডমিনের পারমিশন ছাড়া তুই লিভ  নিস😡😠🤬 \n✦─────꯭─⃝‌‌𝐌𝐝 𝐌𝐚𝐦𝐮𝐧 𝐈𝐬𝐥𝐚𝐦────✦"
-    : "তোমার এই গ্রুপে থাকার কোনো যোগ্যাতা নেই ছাগল😡\nতাই তোমাকে লাথি মেরে গ্রুপ থেকে বের করে দেওয়া হলো🤪 WELLCOME REMOVE🤧\n✦─────꯭─⃝‌‌ 𝐌𝐝 𝐌𝐚𝐦𝐮𝐧 𝐈𝐬𝐥𝐚𝐦────✦";
+  const userID = event.logMessageData.leftParticipantFbId;
+  const name =
+    global.data.userName.get(userID) || (await Users.getNameUser(userID));
 
-  const path = join(__dirname, "𝐌𝐝 𝐌𝐚𝐦𝐮𝐧 𝐈𝐬𝐥𝐚𝐦", "leaveGif");
-  const gifPath = join(path, `leave1.gif`);
+  // ✅ FIXED ternary
+  const type =
+    event.author == userID
+      ? "তোর সাহস কম না 😡😠🤬\nগ্রুপের এডমিনের পারমিশন ছাড়া নিজেই লিভ নিলি!\n✦─────꯭─⃝‌‌𝐌𝐝 𝐌𝐚𝐦𝐮𝐧 𝐈𝐬𝐥𝐚𝐦────✦"
+      : "এই গ্রুপে থাকার কোনো যোগ্যতা ছিল না 🤪\nতাই এডমিন লাথি মেরে বের করে দিলো 😎\nWELCOME REMOVE 🤧\n✦─────꯭─⃝‌‌𝐌𝐝 𝐌𝐚𝐦𝐮𝐧 𝐈𝐬𝐥𝐚𝐦────✦";
 
-  if (!existsSync(path)) mkdirSync(path, { recursive: true });
+  const dirPath = path.join(__dirname, "𝐌𝐝 𝐌𝐚𝐦𝐮𝐧 𝐈𝐬𝐥𝐚𝐦", "leaveGif");
+  const gifPath = path.join(dirPath, "leave1.gif");
 
-  let msg = (typeof data.customLeave == "undefined")
-    ? "ইস {name} {type} "
-    : data.customLeave;
+  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
 
-  msg = msg.replace(/\{name}/g, name).replace(/\{type}/g, type);
+  let msg =
+    typeof data.customLeave == "undefined"
+      ? "👋 {name}\n{type}"
+      : data.customLeave;
 
-  const formPush = existsSync(gifPath)
-    ? { body: msg, attachment: createReadStream(gifPath) }
+  msg = msg.replace(/{name}/g, name).replace(/{type}/g, type);
+
+  const sendData = fs.existsSync(gifPath)
+    ? { body: msg, attachment: fs.createReadStream(gifPath) }
     : { body: msg };
 
-  return api.sendMessage(formPush, threadID);
+  return api.sendMessage(sendData, threadID);
 };
