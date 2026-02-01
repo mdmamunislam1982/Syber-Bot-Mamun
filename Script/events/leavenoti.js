@@ -55,8 +55,11 @@ module.exports.run = async function ({ api, event, Users, Threads }) {
 ╰═════⊹⊱✫⊰⊹═════╯
 
 {session} || {name}
-তিনি চলে গেছে… গ্রুপের নাটক factory বন্ধ, আর meme quality এখন full HD!
-Leave দিয়ে গেলো… importance ছিল WiFi ছাড়া YouTube-এর মতো—একেবারে useless! Drama supplier gone… এখন গ্রুপের সবাই এখন শান্তিতে হাসতে পারবে!
+তিনি চলে গেছে… তিনি ছিলেন গ্রুপের জোকার, ওনার চলে যাওয়ায় meme quality এখন full HD!
+
+Leave দিয়ে গেলো… তিনি গুপে important ছিল WiFi ছাড়া YouTube-এর মতো—একেবারে useless!
+
+Drama supplier gone… এখন গ্রুপের সবাই এখন শান্তিতে হাসতে পারবে!
 ⏰ সময়: {time}
 ⚙️ স্ট্যাটাস: {type}
 
