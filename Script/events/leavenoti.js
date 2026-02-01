@@ -1,71 +1,88 @@
-const fs = require("fs-extra");
-const path = require("path");
-const moment = require("moment-timezone");
-
 module.exports.config = {
-    name: "leave",
-    eventType: ["log:unsubscribe"],
-    version: "1.0.0",
-    credits: "MAMUN",
-    description: "Notify when someone leaves the group with a random gif/photo/video",
-    dependencies: {
-        "fs-extra": "",
-        "path": "",
-        "moment-timezone": ""
-    }
+	name: "leave",
+	eventType: ["log:unsubscribe"],
+	version: "1.1.0",
+	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
+	description: "Notify when someone leaves the group",
+	dependencies: {
+		"fs-extra": "",
+		"path": "",
+		"moment-timezone": ""
+	}
 };
 
 module.exports.onLoad = function () {
-    const dir = path.join(__dirname, "cache", "leaveGif", "randomgif");
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+	const { existsSync, mkdirSync } = global.nodemodule["fs-extra"];
+	const { join } = global.nodemodule["path"];
+
+	const gifPath = join(__dirname, "cache", "leaveGif", "randomgif");
+	if (!existsSync(gifPath)) mkdirSync(gifPath, { recursive: true });
 };
 
-module.exports.run = async function({ api, event, Users, Threads }) {
-    if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) return;
+module.exports.run = async function ({ api, event, Users, Threads }) {
+	if (event.logMessageData.leftParticipantFbId == api.getCurrentUserID()) return;
 
-    const { createReadStream, existsSync, readdirSync } = fs;
-    const { join } = path;
-    const { threadID } = event;
+	const { createReadStream, existsSync, readdirSync } = global.nodemodule["fs-extra"];
+	const { join } = global.nodemodule["path"];
+	const moment = require("moment-timezone");
 
-    // সময় সেট করা
-    const time = moment.tz("Asia/Dhaka").format("DD/MM/YYYY || HH:mm:ss");
-    const hours = moment.tz("Asia/Dhaka").format("HH");
+	const { threadID } = event;
 
-    // গ্রুপ ও ইউজারের ডেটা
-    const data = global.data.threadData.get(parseInt(threadID)) || (await Threads.getData(threadID)).data;
-    const name = global.data.userName.get(event.logMessageData.leftParticipantFbId) || await Users.getNameUser(event.logMessageData.leftParticipantFbId);
-    const type = (event.author == event.logMessageData.leftParticipantFbId) ? "leave" : "managed";
+	const time = moment.tz("Asia/Dhaka").format("DD/MM/YYYY || HH:mm:ss");
+	const hours = parseInt(moment.tz("Asia/Dhaka").format("HH"));
 
-    // ডিফল্ট মেসেজ
-    let msg = (typeof data.customLeave == "undefined") ? 
-        `⚠️ গুরুতর ঘোষণা ⚠️
+	const data =
+		global.data.threadData.get(threadID) ||
+		(await Threads.getData(threadID)).data;
 
-{session} || {name} ভাই/বোন গ্রুপ ছেড়ে চলে গেছে…
-এখন থেকে গ্রুপের নাটকের বিভাগ আনুষ্ঠানিকভাবে বন্ধ!
+	const userID = event.logMessageData.leftParticipantFbId;
+	const name =
+		global.data.userName.get(userID) ||
+		(await Users.getNameUser(userID));
 
-—আসলে সে বুঝে গেছে—এখানে তার গুরুত্ব ছিলো ঠিক যেমন WiFi ছাড়া YouTube… একেবারে অর্থহীন!
+	const type =
+		event.author == userID ? "নিজে লিভ দিছে" : "এডমিন কিক দিছে";
 
-⏰ তারিখ ও সময়: {time}
+	let session =
+		hours <= 10 ? "𝙈𝙤𝙧𝙣𝙞𝙣𝙜" :
+		hours <= 12 ? "𝘼𝙛𝙩𝙚𝙧𝙉𝙤𝙤𝙣" :
+		hours <= 18 ? "𝙀𝙫𝙚𝙣𝙞𝙣𝙜" :
+		"𝙉𝙞𝙜𝙝𝙩";
+
+	let msg = data.customLeave || 
+`╭═════⊹⊱✫⊰⊹═════╮
+⚠️ গুরুতর ঘোষণা ⚠️
+╰═════⊹⊱✫⊰⊹═════╯
+
+{session} || {name}
+এইমাত্র গ্রুপ থেকে বিদায় নিয়েছেন 🥀
+মামুন গ্রুপ ছেড়ে চলে গেছে…  
+এখন থেকে গ্রুপের নাটকের বিভাগ আনুষ্ঠানিকভাবে বন্ধ!  
+যে নোটিফিকেশনগুলোতে সবাই বিরক্ত হতো, সেগুলোও এখন শান্তিতে ঘুমাবে।  
+আসলে সে বুঝে গেছে—এখানে তার গুরুত্ব ছিলো ঠিক যেমন WiFi ছাড়া YouTube… একেবারে অর্থহীন!  
+তার চলে যাওয়ায় গ্রুপের meme quality হঠাৎ করেই upgrade হয়ে গেছে, যেন low‑resolution থেকে full HD তে চলে এসেছি।  
+সবাই এখন শান্তিতে হাসতে পারবে
+⏰ সময়: {time}
 ⚙️ স্ট্যাটাস: {type}
-✍️ সবাই এখন শান্তিতে হাসতে পারবে!` 
-        : data.customLeave;
 
-    // Placeholder রিপ্লেস
-    msg = msg.replace(/\{name}/g, name)
-             .replace(/\{type}/g, type)
-             .replace(/\{session}/g, hours <= 10 ? "Morning" : hours <= 12 ? "Afternoon" : hours <= 18 ? "Evening" : "Night")
-             .replace(/\{time}/g, time);
+✍️ কমেন্টে জানাও তোমার অনুভূতি...`;
 
-    // র‍্যান্ডম মিডিয়া ফাইল খোঁজা
-    const randomPath = readdirSync(join(__dirname, "cache", "leaveGif", "randomgif"));
-    let formPush;
+	msg = msg
+		.replace(/\{name}/g, name)
+		.replace(/\{type}/g, type)
+		.replace(/\{session}/g, session)
+		.replace(/\{time}/g, time);
 
-    if (randomPath.length != 0) {
-        const pathRandom = join(__dirname, "cache", "leaveGif", "randomgif", randomPath[Math.floor(Math.random() * randomPath.length)]);
-        formPush = { body: msg, attachment: createReadStream(pathRandom) };
-    } else {
-        formPush = { body: msg };
-    }
+	const gifFolder = join(__dirname, "cache", "leaveGif", "randomgif");
+	let formPush = { body: msg };
 
-    return api.sendMessage(formPush, threadID);
+	if (existsSync(gifFolder)) {
+		const files = readdirSync(gifFolder);
+		if (files.length > 0) {
+			const randomFile = files[Math.floor(Math.random() * files.length)];
+			formPush.attachment = createReadStream(join(gifFolder, randomFile));
+		}
+	}
+
+	return api.sendMessage(formPush, threadID);
 };
